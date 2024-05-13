@@ -41,7 +41,7 @@ CPPOBJS		:= $(patsubst %, %, $(CPPFILES:.cpp=.o))
 OBJS		:= $(SOBJS) $(COBJS) $(CPPOBJS)
 
 OBJDIRS		:= $(patsubst %, %, $(SRCDIRS))
-NAME		:= xfel
+NAME		:= xfel-ng
 VPATH		:= $(OBJDIRS)
 
 .PHONY:		all install clean
