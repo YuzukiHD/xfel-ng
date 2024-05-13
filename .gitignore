@@ -4,7 +4,6 @@
 *.d
 *.o
 *.map
-*.exe
 *~
 
 #
@@ -13,4 +12,4 @@
 /.cproject
 /.project
 /.settings
-/xfel
+xfel-ng.exe
