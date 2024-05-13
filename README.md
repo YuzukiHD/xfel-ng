@@ -1,12 +1,9 @@
 
 
 ***
-# XFEL
+# XFEL -NG
 Tiny FEL tools for allwinner SOC.
 
-[Documentation](https://xboot.github.io/xfel) &mdash;
-[Support Lists](https://xboot.github.io/xfel#/?id=support-lists) &mdash;
-[Examples](https://xboot.github.io/xfel#/?id=examples) &mdash;
 [Releases](https://github.com/xboot/xfel/releases/)
 
 ## Usage
@@ -38,10 +35,52 @@ usage:
     xfel extra [...]                                    - The extra commands
 ```
 
-## Links
+## Build from source
 
-* [The chinese discussion posts](https://whycan.com/t_6546.html)
-* [The linux-sunxi community](http://sunxi.org/)
+### Linux platform
+
+The xfel tools depends on the `libusb-1.0` library, you need to install `libusb-1.0-0-dev` before compile, for example in ubuntu:
+
+```shell
+sudo apt install libusb-1.0-0-dev
+```
+
+Then just type `make` at the root directory, you will see a binary program.
+
+```shell
+cd xfel
+make
+sudo make install
+```
+
+### Window platform
+
+Windows adopts the cross-compilation method, to install the cross-compilation tool chain in Ubuntu, using:
+
+```shell
+sudo apt install mingw-w64
+sudo apt install autoconf
+sudo apt install libtool-bin
+```
+And build libusb for cross-compilation.
+
+```shell
+git clone https://github.com/libusb/libusb.git
+cd libusb
+./autogen.sh
+./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32/
+make
+sudo make install
+```
+
+Build xfel source code
+
+```shell
+cd xfel
+CROSS=i686-w64-mingw32- make
+```
+
+For 64-bits windows, you can using `x86_64-w64-mingw32-` instead of `i686-w64-mingw32` above.
 
 ## License
 
