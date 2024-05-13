@@ -1,8 +1,6 @@
+# XFEL-NG
 
-
-***
-# XFEL -NG
-Tiny FEL tools for allwinner SOC.
+Tiny FEL tools for allwinner SoC. With new features.
 
 [Releases](https://github.com/xboot/xfel/releases/)
 
