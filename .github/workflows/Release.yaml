@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    steps:
+      - id: last-release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: ${{ github.repository }}
+    outputs:
+      release_id: ${{ steps.last-release.outputs.id }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: prepare_release
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup env
+      run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev mingw-w64 autoconf libtool-bin
+
+    - name: Setup libusb
+      run: |
+        git clone https://github.com/libusb/libusb.git
+        cd libusb
+        ./autogen.sh
+        ./configure --host=i686-w64-mingw32 --prefix=/usr/i686-w64-mingw32/
+        make
+        sudo make install
+
+    - name: Find and build CMake files
+      run: |
+        CROSS=i686-w64-mingw32- make
+
+    - name: Compress files
+      run: |
+        mkdir ${{github.workspace}}/releases
+        cp -rf ${{github.workspace}}/utils/* ${{github.workspace}}/releases
+        cp -rf ${{github.workspace}}/xfel-ng.exe ${{github.workspace}}/releases
+        tar -zcvf ${{github.workspace}}/releases/xfel-ng.tar.gz ./${{github.workspace}}/releases/*
+
+    - name: Upload
+      if: needs.prepare_release.outputs.release_id != ''
+      uses: xresloader/upload-to-github-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ needs.prepare_release.outputs.release_id }}
+        file: "${{github.workspace}}/releases/*.tar.gz"
+        draft: false
+
+    - name: Rollback release
+      if: failure() && needs.prepare_release.outputs.release_id != ''
+      uses: author/action-rollback@stable
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ needs.prepare_release.outputs.release_id }}
+     
